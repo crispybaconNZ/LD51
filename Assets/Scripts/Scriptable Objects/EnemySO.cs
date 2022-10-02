@@ -7,4 +7,5 @@ public class EnemySO : ScriptableObject {
     public string enemyName;
     public int health;
     public AbilitySO primaryAbility;
+    public Sprite sprite;
 }

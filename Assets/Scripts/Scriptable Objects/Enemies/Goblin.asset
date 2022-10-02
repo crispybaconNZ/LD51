@@ -15,3 +15,4 @@ MonoBehaviour:
   enemyName: Goblin
   health: 2
   primaryAbility: {fileID: 11400000, guid: 6e15556556837f949a49578d9496df1d, type: 2}
+  sprite: {fileID: 21300000, guid: d0b9fe2ab28672b4da40507bbeff5954, type: 3}
