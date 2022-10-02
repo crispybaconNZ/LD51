@@ -56,10 +56,15 @@
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\UIManager.cs" />
-    <Compile Include="Assets\Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\CardSO.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\AbilitySO.cs" />
+    <Compile Include="Assets\Scripts\PlayerManager.cs" />
+    <Compile Include="Assets\Scripts\UIManager.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\InitiativeOrder.cs" />
+    <Compile Include="Assets\Scripts\Scriptable Objects\LevelSO.cs" />
+    <Compile Include="Assets\Scripts\Scriptable Objects\EnemySO.cs" />
+    <Compile Include="Assets\Scripts\CrystalManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -925,6 +930,18 @@
     <ProjectReference Include="Unity.VisualScripting.State.csproj">
       <Project>{C765E1A1-3A30-BD10-2DD8-CEE4AE76E8F7}</Project>
       <Name>Unity.VisualScripting.State</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Sysroot.Linux_x86_64.csproj">
+      <Project>{4AD8AC20-BBB7-747F-AEC4-DF0D5947098F}</Project>
+      <Name>Unity.Sysroot.Linux_x86_64</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64.csproj">
+      <Project>{FDA7C6AC-19CB-FCA7-565D-5767C1B558F8}</Project>
+      <Name>Unity.Toolchain.Win-x86_64-Linux-x86_64</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.SysrootPackage.Editor.csproj">
+      <Project>{01ED4FFD-8BBC-557A-71E7-7F8CB699E50C}</Project>
+      <Name>Unity.SysrootPackage.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
