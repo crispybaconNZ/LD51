@@ -9,4 +9,5 @@ using UnityEngine;
 public class CardSO : ScriptableObject {
     public string cardName;     // the name of the card
     public AbilitySO ability;   // the ability contained on the card
+    public Sprite frontImage;
 }
