@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour {
         _playerManager.GetHealthEvent().AddListener(HandlePlayerHealthChange);
 
         _crystalManager.OnEnemySummoned.AddListener(HandleEnemySummoned);
+        _crystalManager.OnEnemyAttack.AddListener(HandleEnemyAttack);
     }
 
     private void OnEnable() {
@@ -53,19 +54,16 @@ public class UIManager : MonoBehaviour {
         _playerManager.GetHealthEvent().RemoveListener(HandlePlayerHealthChange);
 
         _crystalManager.OnEnemySummoned.RemoveListener(HandleEnemySummoned);
+        _crystalManager.OnEnemyAttack.RemoveListener(HandleEnemyAttack);
     }
 
     void Start() {
         SubscribeToEvents();
     }
 
-    // Update is called once per frame
-    void Update() {
-        
-    }
-
     //----- InitiativeOrder/Timeline listeners -----
     public void UpdateInitiativeOrder(SortedList<int, IAbility> obj) {
+        Debug.Log($"Initiative order has been updated: {obj.Count}");
     }
 
     public void UpdateCurrentTime(int newTime) {
@@ -114,6 +112,10 @@ public class UIManager : MonoBehaviour {
     //----- Crystal listeners -----
     private void HandleEnemySummoned(EnemySO enemy) {
         _messageBox.text = $"The Crystal summons a {enemy.enemyName}!";
+    }
+
+    private void HandleEnemyAttack(string msg) {
+        _messageBox.text = msg;
     }
 
     //----- Player listeners -----

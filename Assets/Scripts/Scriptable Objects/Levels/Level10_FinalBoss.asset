@@ -15,7 +15,7 @@ MonoBehaviour:
   levelName: The Final Fight
   level: 10
   spawnRoster:
-  - {fileID: 11400000, guid: 3e4f611f5ec6e4f40b2e8c4f55e8199c, type: 2}
+  - {fileID: 11400000, guid: 3487e05760d503b42bd38d58359fcc3c, type: 2}
   boss: {fileID: 0}
   backgroundImage: {fileID: 21300000, guid: e2d599de3a6a81540a449d6189dc83c8, type: 3}
   nextLevel: {fileID: 0}

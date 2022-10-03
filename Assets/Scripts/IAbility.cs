@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IAbility {
     void Trigger();
-
     Sprite GetIcon();
+    string GetTag();
 }

@@ -55,4 +55,7 @@ public class Deck {
 
         return sb.ToString();
     }
+
+    public void Clear() { _cards.Clear(); }
+
 }

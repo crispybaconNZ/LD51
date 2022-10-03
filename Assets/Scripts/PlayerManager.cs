@@ -23,6 +23,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
 
     private int _hitpoints;
     private const int MAX_HITPOINTS = 20;
+    public bool playedCard = false;
 
     private void Awake() {
         if (OnDrawDeckChanged == null) { OnDrawDeckChanged = new DeckChanged(); }
@@ -35,9 +36,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         drawDeck = new Deck();
         discardDeck = new Deck();
         hand = new Deck();
-    }
-
-    private void Update() {
+        _hitpoints = MAX_HITPOINTS;
     }
 
     public void DrawCards(int number=3) {
@@ -82,6 +81,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
     }
 
     public void InitialiseDrawDeck() {
+        drawDeck.Clear();
         for (int i = 0; i < STARTING_DRAW_DECK_SIZE; i++) {
             int randomCard = Random.Range(0, startingDrawDeckSeed.Length);
             drawDeck.AddCard(startingDrawDeckSeed[randomCard]);
@@ -90,10 +90,45 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
     }
 
     public void PlayCard(int index) {
+        if (_gameManager.currentState != GameState.PlayPhase) { return; }
         Debug.Log($"Playing card at option {index + 1}");
 
         CardSO card = hand.PeekCard(index);
-        Debug.Log($"Selected card: {card.cardName}");
+        Debug.Log($"Casting {card.cardName}");
+        ResolveCard(card);
+    }
+
+    public void ResolveCard(CardSO card) {
+        switch (card.ability.type) {
+            case AbilityType.DamageDealing:
+                ResolveDamangeDealer(card);
+                break;
+            case AbilityType.Healing:
+                ResolveHealPlayer(card);
+                break;
+            case AbilityType.Summoning:
+                ResolveSummoning(card);
+                break;
+            default:
+                Debug.Log($"Unhandled ability type '{card.ability.type}' on card '{card.cardName}'");
+                break;
+        }
+    }
+
+    public void ResolveDamangeDealer(CardSO card) {
+        // select a target
+        IHealth target = _gameManager.SelectTargetEnemy();
+
+        // apply damage to that target
+        target.DoDamage(card.ability.damageDealt);
+    }
+
+    public void ResolveHealPlayer(CardSO card) {
+        HealDamage(card.ability.damageHealed);
+    }
+
+    public void ResolveSummoning(CardSO card) {
+
     }
 
     //----- IAbility methods -----
@@ -103,6 +138,10 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
 
     public Sprite GetIcon() {
         return _icon;
+    }
+
+    public string GetTag() {
+        return tag;
     }
 
     //----- IHealth methods -----
@@ -115,6 +154,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
     }
 
     public int DoDamage(int amount = -1) {
+        Debug.Log($"Player received {amount} damage");
         if (amount == -1) {
             _hitpoints = 0;
         } else {

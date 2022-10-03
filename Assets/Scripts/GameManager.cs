@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour {
     public GameState currentState = GameState.InitGame;
     public int currentTime = 0;
 
-    private InitiativeOrder order;
+    public InitiativeOrder order;
 
     [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private CrystalManager _crystalManager;
@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private bool _debugMode = false;
 
     private SpriteRenderer sr;
+    private GameObject _selectedTarget;
  
     // ----- EVENTS -----
     public class InitiativeEvent : UnityEvent<SortedList<int, IAbility>> { }
@@ -73,6 +74,8 @@ public class GameManager : MonoBehaviour {
         order = new InitiativeOrder();
         sr = GetComponent<SpriteRenderer>();
         currentState = GameState.InitGame;
+        _selectedTarget = null;
+
     }
 
     void Update() {
@@ -83,6 +86,8 @@ public class GameManager : MonoBehaviour {
     }
 
     public void HandleState() {
+        Debug.Log($"Current state is {currentState}");
+
         switch (currentState) {
             case GameState.InitGame:
                 _playerManager.InitialiseDrawDeck();
@@ -91,8 +96,14 @@ public class GameManager : MonoBehaviour {
 
             case GameState.InitLevel:
                 OnLevelChanged?.Invoke(currentLevel);
+                _playerManager.InitialiseDrawDeck();
                 currentState = GameState.SelectNextPlayer;
                 sr.sprite = currentLevel.backgroundImage;
+                order.Reset();
+                order.InsertAt(1, _playerManager.gameObject.GetComponent<IAbility>());
+                order.InsertAt(10, _crystalManager.gameObject.GetComponent<IAbility>());
+                currentTime = 0;
+                OnTimelineChanged?.Invoke(currentTime);
                 break;
 
             case GameState.CheckForEndgame:
@@ -105,7 +116,7 @@ public class GameManager : MonoBehaviour {
                 break;
 
             case GameState.SelectNextPlayer:
-                currentState = GameState.PlayerTurn;    // TODO
+                currentState = SelectNextPlayer();
                 break;
 
             // --- player's turn ---
@@ -118,7 +129,13 @@ public class GameManager : MonoBehaviour {
                 currentState = GameState.PlayPhase;
                 break;
 
-            case GameState.PlayPhase:                
+            case GameState.PlayPhase:
+                // wait for player to select a card
+                while (!_playerManager.playedCard) { }
+                currentState = GameState.DiscardPhase;
+                break;
+
+            case GameState.SelectEnemy:
                 currentState = GameState.DiscardPhase;
                 break;
 
@@ -148,10 +165,16 @@ public class GameManager : MonoBehaviour {
             case GameState.SpawnEnemy:
                 _crystalManager.Trigger();
                 currentState = GameState.CheckForEndgame;
+                order.InsertAt(currentTime + 10, _crystalManager.gameObject.GetComponent<IAbility>());
+                break;
+
+            // --- end of game ---
+            case GameState.GameLoss:
+            case GameState.GameWin:
                 break;
 
             default:
-                // Debug.Log("Unhandled game state '" + currentState + "'");
+                Debug.Log("Unhandled game state '" + currentState + "'");
                 break;
         }
     }
@@ -164,7 +187,7 @@ public class GameManager : MonoBehaviour {
     public void AdvanceTime() {
         // move time to the next GameObject in the initiative order
         currentTime++;  // advance by one to go past the last actor
-        order.Purge(currentTime);   // remove everything before this new time
+        // order.Purge(currentTime);   // remove everything before this new time
         currentTime = order.MinimumIndex;   // update currentTime to the first item in the initiative order
         OnTimelineChanged?.Invoke(currentTime);     // tell anyone interested that the time has changed
     }
@@ -179,6 +202,58 @@ public class GameManager : MonoBehaviour {
 
         // return list
         return targets;
+    }
+
+    public GameState SelectNextPlayer() {
+        // advance time so the next player is available
+        AdvanceTime();
+        Debug.Log($"Current time updated to {currentTime}");
+
+        // get next player, should be at the next index
+        IAbility nextPlayer = order.GetNext(currentTime);
+        if (nextPlayer == null) { return currentState; }
+
+        // use the tag to determine whose turn it is next
+        if (nextPlayer.GetTag() == "Player") {
+            return GameState.PlayerTurn;
+        } else if (nextPlayer.GetTag() == "Crystal") {
+            return GameState.CrystalTurn;
+        } else if (nextPlayer.GetTag() == "Enemy") {
+            return GameState.EnemyTurn;
+        } else {
+            Debug.Log($"Unknown tag '{nextPlayer.GetTag()}'");
+            return GameState.SelectNextPlayer;
+        }
+    }
+
+    public IHealth SelectTargetEnemy() {
+        while (_selectedTarget == null) {
+            // wait for a mouse click and
+            // see if it's on an enemy gameobject (has tag "Enemy")
+            if (_selectedTarget.tag == "Enemy") {
+                IHealth target = _selectedTarget.GetComponent<IHealth>();
+                // if yes, convert to IHealth and return
+                return target;
+            } else {
+                _selectedTarget = null;
+            }
+            // otherwise wait for mouse click
+        }
+        return null;
+    }
+
+    public void HandleMouseClick(InputAction.CallbackContext context) {
+        if (context.performed) {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+
+            if (hit.collider != null) {
+                Debug.Log($"Clicked on {hit.collider.gameObject.name}");
+                _selectedTarget = hit.collider.gameObject;
+                _playerManager.playedCard = true;
+            }
+        }
     }
 
     // ----- TEST METHODS -----

@@ -18,9 +18,13 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
     public class SummoningEvent : UnityEvent<EnemySO> { }
     public SummoningEvent OnEnemySummoned;
 
+    public class EnemyAttackEvent : UnityEvent<string> { }
+    public EnemyAttackEvent OnEnemyAttack;
+
     //----- Methods -----
     private void Awake() {
         if (OnEnemySummoned == null) { OnEnemySummoned = new SummoningEvent(); }
+        if (OnEnemyAttack == null) { OnEnemyAttack = new EnemyAttackEvent(); }
     }
 
     private void OnEnable() {        
@@ -49,6 +53,10 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
         _spawnedEnemies.Clear();
     }
 
+    private void HandleEnemyAttack(string msg) {
+        OnEnemyAttack?.Invoke(msg);
+    }
+
     //----- IAbility methods -----
     public void Trigger() {
         // crystal only has one ability, and that's to spawn new enemies
@@ -62,21 +70,27 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
 
         // figure out which spawnpoint it will occupy
         int index = _spawnedEnemies.Count;
-        Debug.Log($"Selected index: {index}");
+        // Debug.Log($"Selected index: {index}");
 
         // spawn a new enemy
         Vector3 position = spawnPoints[index].transform.position;
-        Debug.Log($"Spawning at {position}");
+        // Debug.Log($"Spawning at {position}");
         GameObject _spawnedEnemy = Instantiate(_prefab, position, Quaternion.identity, this.transform);
         _spawnedEnemy.GetComponent<EnemyBrain>().LoadTemplate(enemy);
         _spawnedEnemy.GetComponent<SpriteRenderer>().sprite = enemy.sprite;
+        _spawnedEnemy.GetComponent<EnemyBrain>().OnEnemyAttacks.AddListener(HandleEnemyAttack);
         _spawnedEnemies.Add(_spawnedEnemy);
+        _gameManager.order.InsertAt(_gameManager.currentTime, _spawnedEnemy.GetComponent<IAbility>());
 
         OnEnemySummoned?.Invoke(enemy);
     }
 
     public Sprite GetIcon() {
         return _icon;
+    }
+
+    public string GetTag() {
+        return tag;
     }
 
     //----- IHealth methods ----

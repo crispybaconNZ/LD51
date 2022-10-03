@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
     [SerializeField] private Sprite _icon;
@@ -8,11 +9,13 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
     [SerializeField] private GameManager _gameManager;
 
     private int _hitpoints;
-    
+
+    public class AttackEvent : UnityEvent<string> { }
+    public AttackEvent OnEnemyAttacks;
 
     // Start is called before the first frame update
     void Awake() {
-        
+        if (OnEnemyAttacks == null) { OnEnemyAttacks = new AttackEvent(); }
     }
 
     // Update is called once per frame
@@ -43,8 +46,14 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
 
             // do damage to target
             target.DoDamage(ab.damageDealt);
+            OnEnemyAttacks?.Invoke($"{_template.enemyName} attacked with {ab.abilityName} for {ab.damageDealt} damage!");
         }
     }
+
+    public string GetTag() {
+        return tag;
+    }
+
 
     //----- IHealth methods -----
     public int CurrentHealth() {

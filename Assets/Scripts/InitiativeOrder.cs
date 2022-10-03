@@ -34,6 +34,7 @@ public class InitiativeOrder {
     /// <param name="floor">The minimum index for inserting an object (while not insert if index is less than floor).</param>
     /// <returns>The index the object was actually inserted at, or -1 if a null object was passed to obj or index is below the floor value.</returns>
     public int InsertAt(int index, IAbility obj, int floor=0) {
+        Debug.Log($"Inserting {obj} at index {index}");
         if (obj == null || index < floor) {
             return -1;
         }
@@ -43,6 +44,7 @@ public class InitiativeOrder {
         }
 
         _order.Add(index, obj);
+        Debug.Log($"Inserted {obj} at index {index}");
         OnInitiativeChanged?.Invoke(_order);
         return index;
     }
@@ -93,6 +95,7 @@ public class InitiativeOrder {
             }
         }
 
+        Debug.Log($"{removeList.Count} items in removeList");
         if (removeList.Count > 0) {
             foreach (int index in removeList) {
                 // not using InitiativeOrder.RemoveAt() method, as want to remove everything before invoking the event
@@ -103,4 +106,23 @@ public class InitiativeOrder {
 
     }
 
+    public IAbility GetNext(int startIndex=0) {
+        Debug.Log($"GetNext({startIndex}): {minimumIndex}, {_order.Count}");
+        if (_order.Count == 0) { return null; }
+        
+        int index = startIndex;
+        IAbility nextAbility = null;
+        while (nextAbility == null && startIndex < _order.Keys[_order.Count - 1]) {
+            if (_order.ContainsKey(index)) {
+                return _order[index];
+            }
+            index++;
+        }
+        return null;
+    }
+
+    public void Reset() {
+        _order.Clear();
+        UpdateMinimumIndex(_order);
+    }
 }

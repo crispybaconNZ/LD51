@@ -15,7 +15,7 @@ MonoBehaviour:
   levelName: Midgame fight
   level: 5
   spawnRoster:
-  - {fileID: 11400000, guid: 3e4f611f5ec6e4f40b2e8c4f55e8199c, type: 2}
+  - {fileID: 11400000, guid: 3487e05760d503b42bd38d58359fcc3c, type: 2}
   boss: {fileID: 0}
   backgroundImage: {fileID: 0}
   nextLevel: {fileID: 11400000, guid: 34f0fd66db741d648b21913b25083a39, type: 2}
