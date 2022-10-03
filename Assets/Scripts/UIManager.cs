@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour {
     [SerializeField] private GameManager _gameManager;
     [SerializeField] private PlayerManager _playerManager;
+    [SerializeField] private CrystalManager _crystalManager;
+    [SerializeField] private EnemyManager _enemyManager;  
 
     [SerializeField] private TextMeshProUGUI _currentTimeText;
     [SerializeField] private TextMeshProUGUI _messageBox;
@@ -31,6 +33,9 @@ public class UIManager : MonoBehaviour {
         _playerManager.OnDiscardDeckChanged.AddListener(UpdateDiscardDeck);
         _playerManager.OnDrawDeckChanged.AddListener(UpdateDrawDeck);
         _playerManager.OnHandChanged.AddListener(UpdateHand);
+        _playerManager.GetHealthEvent().AddListener(HandlePlayerHealthChange);
+
+        _crystalManager.OnEnemySummoned.AddListener(HandleEnemySummoned);
     }
 
     private void OnEnable() {
@@ -45,6 +50,9 @@ public class UIManager : MonoBehaviour {
         _playerManager.OnDiscardDeckChanged.RemoveListener(UpdateDiscardDeck);
         _playerManager.OnDrawDeckChanged.RemoveListener(UpdateDrawDeck);
         _playerManager.OnHandChanged.RemoveListener(UpdateHand);
+        _playerManager.GetHealthEvent().RemoveListener(HandlePlayerHealthChange);
+
+        _crystalManager.OnEnemySummoned.RemoveListener(HandleEnemySummoned);
     }
 
     void Start() {
@@ -103,4 +111,13 @@ public class UIManager : MonoBehaviour {
         }
     }
 
+    //----- Crystal listeners -----
+    private void HandleEnemySummoned(EnemySO enemy) {
+        _messageBox.text = $"The Crystal summons a {enemy.enemyName}!";
+    }
+
+    //----- Player listeners -----
+    private void HandlePlayerHealthChange(IHealth player) {
+
+    }
 }

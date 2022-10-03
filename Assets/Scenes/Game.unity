@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 144212897}
   m_Layer: 0
   m_Name: Player_Manager
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -288,8 +288,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f5552df07650d9e4b9c31db018c20bbf, type: 2}
   - {fileID: 11400000, guid: 8e5f59abff231664497958a1d87fea9b, type: 2}
   - {fileID: 11400000, guid: b4ad9fad81ee0cd48992ce1974be10eb, type: 2}
-  _gameManager: {fileID: 0}
-  _icon: {fileID: 0}
+  _gameManager: {fileID: 1528129820}
+  _icon: {fileID: 21300000, guid: 3108d0a3ce7000746aac5bd26c2903bb, type: 3}
 --- !u!212 &144212896
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -399,6 +399,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 3ce0a62c-f382-4999-91c4-bc0174d88335
     m_ActionName: Debugging/DrawCards[/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1528129820}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: TestCrystalSpawning
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: dc179a9c-d399-4efb-8905-dcc07f28965d
+    m_ActionName: Debugging/Crystal Spawn[/Keyboard/s]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Debugging
@@ -417,7 +433,7 @@ GameObject:
   - component: {fileID: 163020139}
   m_Layer: 0
   m_Name: Crystal_Manager
-  m_TagString: Untagged
+  m_TagString: Crystal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -512,6 +528,7 @@ MonoBehaviour:
   - {fileID: 1462642304}
   _gameManager: {fileID: 1528129820}
   _icon: {fileID: 21300000, guid: dc7d6657d6ca938469669d937bcdbb0d, type: 3}
+  _prefab: {fileID: 6076170267476325521, guid: 7b589327d6c0011438e73019fe78bc24, type: 3}
 --- !u!1 &185824245
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,7 +764,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 194516020}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 144212895}
+        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+        m_MethodName: PlayCard
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &194516020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -795,6 +824,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 209126956}
+  - component: {fileID: 209126957}
   m_Layer: 0
   m_Name: Enemy_Manager
   m_TagString: Untagged
@@ -818,6 +848,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &209126957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209126955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3991160f6e85e384bb966b8789e75fc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _icon: {fileID: 21300000, guid: 2be3d3f81e78dfc489ddaf0a2f736986, type: 3}
 --- !u!1 &222335920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1561,7 +1604,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 893673583}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 144212895}
+        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+        m_MethodName: PlayCard
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &893673583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2023,6 +2078,7 @@ MonoBehaviour:
   currentState: 0
   currentTime: 0
   _playerManager: {fileID: 144212895}
+  _crystalManager: {fileID: 163020139}
   currentLevel: {fileID: 11400000, guid: 0aaaf114916c44f4089348fca2ed5b9f, type: 2}
   _debugMode: 1
 --- !u!212 &1528129821
@@ -2160,7 +2216,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1665807834}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 144212895}
+        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+        m_MethodName: PlayCard
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1665807834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2815,6 +2883,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameManager: {fileID: 1528129820}
   _playerManager: {fileID: 144212895}
+  _crystalManager: {fileID: 163020139}
+  _enemyManager: {fileID: 209126957}
   _currentTimeText: {fileID: 1869871056}
   _messageBox: {fileID: 1820307042}
   _discardDeckCounterText: {fileID: 597783327}

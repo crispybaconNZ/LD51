@@ -8,6 +8,9 @@ public enum GameState {
     InitGame,
     InitLevel,
 
+    CheckForEndgame,    // check whether the player has won or lost
+    SelectNextPlayer,   // choose who gets next turn
+
     PlayerTurn,     // Start of player turn
     DrawPhase,      // Draw cards into hand
     PlayPhase,      // Play a card from hand
@@ -21,7 +24,9 @@ public enum GameState {
     CrystalTurn,    // Start of crystal's turn
     SpawnEnemy,     // Spawn an enemy onto the battlefield
 
-    GameOver        // game is over
+    GameOver,        // game is over
+    GameWin,         // player has won
+    GameLoss,        // player has lost
 }
 
 public class GameManager : MonoBehaviour {
@@ -31,6 +36,7 @@ public class GameManager : MonoBehaviour {
     private InitiativeOrder order;
 
     [SerializeField] private PlayerManager _playerManager;
+    [SerializeField] private CrystalManager _crystalManager;
     [SerializeField] private LevelSO currentLevel;
 
     [SerializeField] private bool _debugMode = false;
@@ -84,14 +90,64 @@ public class GameManager : MonoBehaviour {
                 break;
 
             case GameState.InitLevel:
-                OnLevelChanged.Invoke(currentLevel);
-                currentState = GameState.PlayerTurn;
+                OnLevelChanged?.Invoke(currentLevel);
+                currentState = GameState.SelectNextPlayer;
                 sr.sprite = currentLevel.backgroundImage;
                 break;
 
+            case GameState.CheckForEndgame:
+                // do check here for end of game
+                if (_playerManager.IsDead()) {
+                    currentState = GameState.GameLoss;
+                } else {
+                    currentState = GameState.SelectNextPlayer;
+                }
+                break;
+
+            case GameState.SelectNextPlayer:
+                currentState = GameState.PlayerTurn;    // TODO
+                break;
+
+            // --- player's turn ---
+            case GameState.PlayerTurn:
+                currentState = GameState.DrawPhase;
+                break;
+          
             case GameState.DrawPhase:
                 _playerManager.DrawCards();
                 currentState = GameState.PlayPhase;
+                break;
+
+            case GameState.PlayPhase:                
+                currentState = GameState.DiscardPhase;
+                break;
+
+            case GameState.DiscardPhase:
+                _playerManager.DiscardHand();
+                currentState = GameState.SelectNextPlayer;
+                break;
+
+            // ---  enemy's turn ---
+            case GameState.EnemyTurn:
+                currentState = GameState.SelectTarget;
+                break;
+
+            case GameState.SelectTarget:
+                currentState = GameState.AttackTarget;
+                break;
+
+            case GameState.AttackTarget:
+                currentState = GameState.CheckForEndgame;
+                break;
+
+            // --- crystal's turn ---
+            case GameState.CrystalTurn:
+                currentState = GameState.SpawnEnemy;
+                break;
+
+            case GameState.SpawnEnemy:
+                _crystalManager.Trigger();
+                currentState = GameState.CheckForEndgame;
                 break;
 
             default:
@@ -112,7 +168,18 @@ public class GameManager : MonoBehaviour {
         currentTime = order.MinimumIndex;   // update currentTime to the first item in the initiative order
         OnTimelineChanged?.Invoke(currentTime);     // tell anyone interested that the time has changed
     }
+    
+    public List<IHealth> GetTargetsForEnemies() {
+        List<IHealth> targets = new List<IHealth>();
 
+        // Add the player
+        targets.Add(_playerManager);
+
+        // Add any player allies
+
+        // return list
+        return targets;
+    }
 
     // ----- TEST METHODS -----
     public void NextLevel(InputAction.CallbackContext context) {
@@ -133,6 +200,12 @@ public class GameManager : MonoBehaviour {
     public void TestDrawCards(InputAction.CallbackContext context) {
         if (context.performed && _debugMode) {
             currentState = GameState.DrawPhase;
+        }
+    }
+
+    public void TestCrystalSpawning(InputAction.CallbackContext context) {
+        if (context.performed && _debugMode) {
+            currentState = GameState.SpawnEnemy;
         }
     }
 }

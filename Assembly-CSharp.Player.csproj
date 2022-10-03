@@ -68,6 +68,8 @@
     <Compile Include="Assets\Scripts\Scriptable Objects\EnemySO.cs" />
     <Compile Include="Assets\Scripts\IAbility.cs" />
     <Compile Include="Assets\Scripts\IHealth.cs" />
+    <Compile Include="Assets\Scripts\EnemyManager.cs" />
+    <Compile Include="Assets\Scripts\EnemyBrain.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

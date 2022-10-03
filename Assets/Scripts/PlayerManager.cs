@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
     public DeckChanged OnDrawDeckChanged;
     public DeckChanged OnDiscardDeckChanged;
     public DeckChanged OnHandChanged;
+    public IHealth.IHealthEvent OnHealthChanged;
 
     public const int STARTING_DRAW_DECK_SIZE = 20;
 
@@ -27,6 +28,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         if (OnDrawDeckChanged == null) { OnDrawDeckChanged = new DeckChanged(); }
         if (OnDiscardDeckChanged == null) { OnDiscardDeckChanged = new DeckChanged(); }
         if (OnHandChanged == null) { OnHandChanged = new DeckChanged(); }
+        if (OnHealthChanged == null) { OnHealthChanged = new IHealth.IHealthEvent(); }
     }
 
     private void Start() {
@@ -87,6 +89,13 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         OnDrawDeckChanged?.Invoke(drawDeck);
     }
 
+    public void PlayCard(int index) {
+        Debug.Log($"Playing card at option {index + 1}");
+
+        CardSO card = hand.PeekCard(index);
+        Debug.Log($"Selected card: {card.cardName}");
+    }
+
     //----- IAbility methods -----
     public void Trigger() {
         throw new System.NotImplementedException();
@@ -112,6 +121,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
             _hitpoints = Mathf.Max(0, _hitpoints - Mathf.Abs(amount));
         }
 
+        GetHealthEvent()?.Invoke(this);
         return _hitpoints;
     }
 
@@ -122,7 +132,12 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
             _hitpoints = Mathf.Min(MAX_HITPOINTS, _hitpoints + Mathf.Abs(amount));
         }
 
+        GetHealthEvent()?.Invoke(this);
         return _hitpoints;
+    }
+
+    public IHealth.IHealthEvent GetHealthEvent() {
+        return OnHealthChanged;
     }
 
     public bool IsDead() {
