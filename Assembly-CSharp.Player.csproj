@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\CardSO.cs" />
+    <Compile Include="Assets\Scripts\Deck.cs" />
     <Compile Include="Assets\Scripts\InitiativeOrder.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\AbilitySO.cs" />
     <Compile Include="Assets\Scripts\CrystalManager.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\EnemySO.cs" />
+    <Compile Include="Assets\Scripts\IAbility.cs" />
+    <Compile Include="Assets\Scripts\IHealth.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

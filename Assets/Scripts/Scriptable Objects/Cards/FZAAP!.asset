@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8141235d22a3c2047ad8445d71d40289, type: 3}
+  m_Name: FZAAP!
+  m_EditorClassIdentifier: 
+  cardName: FZAAP!!
+  ability: {fileID: 11400000, guid: 7a4707f248cc63e42ac261a8dbfa2210, type: 2}
+  frontImage: {fileID: 21300000, guid: 7e20f778634606d439558a2791c6df4c, type: 3}

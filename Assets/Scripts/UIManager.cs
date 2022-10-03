@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
     [SerializeField] private GameManager _gameManager;
@@ -10,10 +11,19 @@ public class UIManager : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI _currentTimeText;
     [SerializeField] private TextMeshProUGUI _messageBox;
     [SerializeField] private TextMeshProUGUI _discardDeckCounterText;
+    [SerializeField] private Image _discardDeckTopCard;
+    [SerializeField] private Image _drawDeckTopCard;
     [SerializeField] private TextMeshProUGUI _drawDeckCounterText;
 
-    // Start is called before the first frame update
-    private void OnEnable() {
+    [SerializeField] private Button[] _choices;
+
+    [SerializeField] private Sprite _emptyDeck;
+    [SerializeField] private Sprite _cardBack;
+    [SerializeField] private Sprite _emptyDiscardDeck;
+    [SerializeField] private Sprite _emptyDrawDeck;
+
+
+    private void SubscribeToEvents() {
         _gameManager.OnInitiativeChanged.AddListener(UpdateInitiativeOrder);
         _gameManager.OnTimelineChanged.AddListener(UpdateCurrentTime);
         _gameManager.OnLevelChanged.AddListener(HandleLevelChange);
@@ -21,6 +31,10 @@ public class UIManager : MonoBehaviour {
         _playerManager.OnDiscardDeckChanged.AddListener(UpdateDiscardDeck);
         _playerManager.OnDrawDeckChanged.AddListener(UpdateDrawDeck);
         _playerManager.OnHandChanged.AddListener(UpdateHand);
+    }
+
+    private void OnEnable() {
+        SubscribeToEvents();
     }
 
     private void OnDisable() {
@@ -34,13 +48,7 @@ public class UIManager : MonoBehaviour {
     }
 
     void Start() {
-        _gameManager.OnInitiativeChanged.AddListener(UpdateInitiativeOrder);
-        _gameManager.OnTimelineChanged.AddListener(UpdateCurrentTime);
-        _gameManager.OnLevelChanged.AddListener(HandleLevelChange);
-
-        _playerManager?.OnDiscardDeckChanged.AddListener(UpdateDiscardDeck);
-        _playerManager?.OnDrawDeckChanged.AddListener(UpdateDrawDeck);
-        _playerManager?.OnHandChanged.AddListener(UpdateHand);
+        SubscribeToEvents();
     }
 
     // Update is called once per frame
@@ -48,7 +56,8 @@ public class UIManager : MonoBehaviour {
         
     }
 
-    public void UpdateInitiativeOrder(SortedList<int, GameObject> obj) {
+    //----- InitiativeOrder/Timeline listeners -----
+    public void UpdateInitiativeOrder(SortedList<int, IAbility> obj) {
     }
 
     public void UpdateCurrentTime(int newTime) {
@@ -59,15 +68,39 @@ public class UIManager : MonoBehaviour {
         _messageBox.text = $"Level {level.level} : {level.levelName}";
     }
 
-    private void UpdateDiscardDeck(Queue<CardSO> deck) {
+    //----- Deck listeners -----
+    private void UpdateDiscardDeck(Deck deck) {
+        // pick the correct image 
+        if (deck.Count > 0) {
+            _discardDeckTopCard.sprite = deck.PeekCard(deck.Count - 1).frontImage;
+        } else {
+            _discardDeckTopCard.sprite = _emptyDiscardDeck;
+        }
         _discardDeckCounterText.text = deck.Count.ToString();
     }
 
-    private void UpdateDrawDeck(Queue<CardSO> deck) {
+    private void UpdateDrawDeck(Deck deck) {
+        // pick the correct image 
+        if (deck.Count > 0) {
+            _drawDeckTopCard.sprite = _cardBack;
+        } else {
+            _drawDeckTopCard.sprite = _emptyDrawDeck;
+        }
         _drawDeckCounterText.text = deck.Count.ToString();
     }
 
-    private void UpdateHand(Queue<CardSO> deck) {
+    private void UpdateHand(Deck deck) {
+        if (deck.Count == 0) {
+            for (int index = 0; index < _choices.Length; index++) {
+                _choices[index].GetComponent<Image>().sprite = _emptyDeck;
+            }           
+            return;
+        }
+
+        int limit = Mathf.Min(deck.Count, _choices.Length);
+        for (int index = 0; index < limit; index++) {
+            _choices[index].GetComponent<Image>().sprite = deck.PeekCard(index).frontImage;
+        }
     }
 
 }

@@ -11,10 +11,10 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public class InitiativeOrder {
-    private SortedList<int, GameObject> _order = new SortedList<int, GameObject>();
+    private SortedList<int, IAbility> _order = new SortedList<int, IAbility>();
     private int minimumIndex = -1;  // minimum index currently in use, -1 when order is empty
 
-    public class InitiativeEvent : UnityEvent<SortedList<int, GameObject>> { }
+    public class InitiativeEvent : UnityEvent<SortedList<int, IAbility>> { }
     public InitiativeEvent OnInitiativeChanged;
 
     public int MinimumIndex { get => minimumIndex; private set => minimumIndex = value; }
@@ -33,7 +33,7 @@ public class InitiativeOrder {
     /// <param name="obj">The GameObject to insert.</param>
     /// <param name="floor">The minimum index for inserting an object (while not insert if index is less than floor).</param>
     /// <returns>The index the object was actually inserted at, or -1 if a null object was passed to obj or index is below the floor value.</returns>
-    public int InsertAt(int index, GameObject obj, int floor=0) {
+    public int InsertAt(int index, IAbility obj, int floor=0) {
         if (obj == null || index < floor) {
             return -1;
         }
@@ -52,9 +52,9 @@ public class InitiativeOrder {
     /// </summary>
     /// <param name="index">The index to remove from the initiative order.</param>
     /// <returns>The GameObject at the specified index, or null if there was nothing there.</returns>
-    public GameObject RemoveAt(int index) {
+    public IAbility RemoveAt(int index) {
         if (ContainsIndex(index)) {
-            GameObject obj = _order[index];
+            IAbility obj = _order[index];
             _order.Remove(index);
             OnInitiativeChanged?.Invoke(_order);
             return obj;
@@ -72,7 +72,7 @@ public class InitiativeOrder {
         return _order.ContainsKey(index);
     }
 
-    private void UpdateMinimumIndex(SortedList<int, GameObject> ord) {
+    private void UpdateMinimumIndex(SortedList<int, IAbility> ord) {
         if (_order.Count == 0) {
             MinimumIndex = -1;
             return;

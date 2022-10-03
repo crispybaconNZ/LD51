@@ -33,10 +33,12 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private LevelSO currentLevel;
 
+    [SerializeField] private bool _debugMode = false;
+
     private SpriteRenderer sr;
  
     // ----- EVENTS -----
-    public class InitiativeEvent : UnityEvent<SortedList<int, GameObject>> { }
+    public class InitiativeEvent : UnityEvent<SortedList<int, IAbility>> { }
     public InitiativeEvent OnInitiativeChanged;
 
     public class TimelineEvent: UnityEvent<int> { }
@@ -54,7 +56,7 @@ public class GameManager : MonoBehaviour {
 
     private void OnEnable() {
         order?.OnInitiativeChanged.AddListener(HandleInitiativeChange);
-        currentState = GameState.InitLevel;
+        currentState = GameState.InitGame;
     }
 
     private void OnDisable() {
@@ -64,7 +66,7 @@ public class GameManager : MonoBehaviour {
     void Start() {
         order = new InitiativeOrder();
         sr = GetComponent<SpriteRenderer>();
-        currentState = GameState.InitLevel;
+        currentState = GameState.InitGame;
     }
 
     void Update() {
@@ -76,17 +78,29 @@ public class GameManager : MonoBehaviour {
 
     public void HandleState() {
         switch (currentState) {
+            case GameState.InitGame:
+                _playerManager.InitialiseDrawDeck();
+                currentState = GameState.InitLevel;
+                break;
+
             case GameState.InitLevel:
                 OnLevelChanged.Invoke(currentLevel);
                 currentState = GameState.PlayerTurn;
+                sr.sprite = currentLevel.backgroundImage;
                 break;
+
+            case GameState.DrawPhase:
+                _playerManager.DrawCards();
+                currentState = GameState.PlayPhase;
+                break;
+
             default:
-                Debug.Log("Unhandled game state '" + currentState + "'");
+                // Debug.Log("Unhandled game state '" + currentState + "'");
                 break;
         }
     }
 
-    public void HandleInitiativeChange(SortedList<int, GameObject> order) {
+    public void HandleInitiativeChange(SortedList<int, IAbility> order) {
         // propagates initiative order changes to preserve privacy of InitiativeOrder object
         OnInitiativeChanged?.Invoke(order);
     }
@@ -99,8 +113,10 @@ public class GameManager : MonoBehaviour {
         OnTimelineChanged?.Invoke(currentTime);     // tell anyone interested that the time has changed
     }
 
+
+    // ----- TEST METHODS -----
     public void NextLevel(InputAction.CallbackContext context) {
-        if (context.performed) {
+        if (context.performed && _debugMode) {
             if (currentLevel == null) {
                 currentState = GameState.GameOver;
             }
@@ -111,6 +127,12 @@ public class GameManager : MonoBehaviour {
             } else {
                 currentState = GameState.GameOver;
             }
+        }
+    }
+
+    public void TestDrawCards(InputAction.CallbackContext context) {
+        if (context.performed && _debugMode) {
+            currentState = GameState.DrawPhase;
         }
     }
 }
