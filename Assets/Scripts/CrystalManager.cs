@@ -57,6 +57,17 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
         OnEnemyAttack?.Invoke(msg);
     }
 
+    public IHealth GetTargetForPlayer() {
+        if (_spawnedEnemies.Count == 0) {
+            Debug.Log("no spawned enemies, so offer the crystal for sacrifice");
+            return gameObject.GetComponent<IHealth>();
+        } else {
+            Debug.Log($"{_spawnedEnemies.Count} spawned enemies, choosing one for attack");
+            int index = _spawnedEnemies.Count - 1;
+            return _spawnedEnemies[index].GetComponent<IHealth>();
+        }
+    }
+
     //----- IAbility methods -----
     public void Trigger() {
         // crystal only has one ability, and that's to spawn new enemies
@@ -103,6 +114,7 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
     }
 
     public int DoDamage(int amount = -1) {
+        Debug.Log($"Crystal takes {amount} damage");
         if (amount == -1) {
             hitpoints = 0;
         } else {

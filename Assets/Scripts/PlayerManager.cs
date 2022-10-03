@@ -96,6 +96,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         CardSO card = hand.PeekCard(index);
         Debug.Log($"Casting {card.cardName}");
         ResolveCard(card);
+        OnHandChanged?.Invoke(hand);
     }
 
     public void ResolveCard(CardSO card) {

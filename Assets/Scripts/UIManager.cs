@@ -96,12 +96,9 @@ public class UIManager : MonoBehaviour {
     }
 
     private void UpdateHand(Deck deck) {
-        if (deck.Count == 0) {
-            for (int index = 0; index < _choices.Length; index++) {
-                _choices[index].GetComponent<Image>().sprite = _emptyDeck;
-            }           
-            return;
-        }
+        for (int index = 0; index < _choices.Length; index++) {
+            _choices[index].GetComponent<Image>().sprite = _emptyDeck;
+        }           
 
         int limit = Mathf.Min(deck.Count, _choices.Length);
         for (int index = 0; index < limit; index++) {

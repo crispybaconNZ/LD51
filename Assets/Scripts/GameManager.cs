@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void HandleState() {
-        Debug.Log($"Current state is {currentState}");
+        //Debug.Log($"Current state is {currentState}");
 
         switch (currentState) {
             case GameState.InitGame:
@@ -131,8 +131,10 @@ public class GameManager : MonoBehaviour {
 
             case GameState.PlayPhase:
                 // wait for player to select a card
-                while (!_playerManager.playedCard) { }
-                currentState = GameState.DiscardPhase;
+                if (_playerManager.playedCard) {
+                    currentState = GameState.DiscardPhase;
+                    _playerManager.playedCard = false;
+                }
                 break;
 
             case GameState.SelectEnemy:
@@ -227,19 +229,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public IHealth SelectTargetEnemy() {
-        while (_selectedTarget == null) {
-            // wait for a mouse click and
-            // see if it's on an enemy gameobject (has tag "Enemy")
-            if (_selectedTarget.tag == "Enemy") {
-                IHealth target = _selectedTarget.GetComponent<IHealth>();
-                // if yes, convert to IHealth and return
-                return target;
-            } else {
-                _selectedTarget = null;
-            }
-            // otherwise wait for mouse click
-        }
-        return null;
+        return _crystalManager.GetTargetForPlayer();
     }
 
     public void HandleMouseClick(InputAction.CallbackContext context) {
