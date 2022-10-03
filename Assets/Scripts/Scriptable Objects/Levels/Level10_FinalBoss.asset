@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45618a582d0dbe145afc293350ebaebe, type: 3}
   m_Name: Level10_FinalBoss
   m_EditorClassIdentifier: 
-  levelName: The Final Fight
+  levelName: The Villain's Lair
   level: 10
   spawnRoster:
   - {fileID: 11400000, guid: 3487e05760d503b42bd38d58359fcc3c, type: 2}
-  boss: {fileID: 0}
+  - {fileID: 11400000, guid: 58a20a992f5dd5f48b3500dba2b102dc, type: 2}
+  - {fileID: 11400000, guid: c2ee08855ea487a41a2d93b64ab317d3, type: 2}
+  boss: {fileID: 11400000, guid: 0f8d02594ce548849a373366a72b9e60, type: 2}
   backgroundImage: {fileID: 21300000, guid: e2d599de3a6a81540a449d6189dc83c8, type: 3}
   nextLevel: {fileID: 0}

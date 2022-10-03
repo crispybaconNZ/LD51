@@ -6,6 +6,8 @@ using UnityEngine.Events;
 public class CrystalManager : MonoBehaviour, IAbility, IHealth {
     [SerializeField] private GameObject[] spawnPoints;
     [SerializeField] private GameManager _gameManager;
+    [SerializeField] private UIManager _uiManager;
+
     [SerializeField] private Sprite _icon;  // for timeline
     [SerializeField] private GameObject _prefab;    // for enemies
 
@@ -59,13 +61,18 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
 
     public IHealth GetTargetForPlayer() {
         if (_spawnedEnemies.Count == 0) {
-            Debug.Log("no spawned enemies, so offer the crystal for sacrifice");
             return gameObject.GetComponent<IHealth>();
         } else {
-            Debug.Log($"{_spawnedEnemies.Count} spawned enemies, choosing one for attack");
             int index = _spawnedEnemies.Count - 1;
             return _spawnedEnemies[index].GetComponent<IHealth>();
         }
+    }
+
+    public void HandleEnemyDeath(EnemyBrain casualty) {
+        casualty.OnEnemyDeath.RemoveListener(HandleEnemyDeath);
+        _spawnedEnemies.Remove(casualty.gameObject);
+        _gameManager.order.Remove(casualty.GetComponent<IAbility>());
+        casualty.gameObject.SetActive(false);
     }
 
     //----- IAbility methods -----
@@ -90,6 +97,8 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
         _spawnedEnemy.GetComponent<SpriteRenderer>().sprite = enemy.sprite;
         _spawnedEnemy.GetComponent<EnemyBrain>().OnEnemyAttacks.AddListener(HandleEnemyAttack);
         _spawnedEnemy.GetComponent<EnemyBrain>().SetGameManager(_gameManager);
+        _uiManager.SubscribeToDynamicEnemies(_spawnedEnemy.GetComponent<EnemyBrain>());
+        _spawnedEnemy.GetComponent<EnemyBrain>().OnEnemyDeath.AddListener(HandleEnemyDeath);
         _spawnedEnemies.Add(_spawnedEnemy);
         _gameManager.order.InsertAt(_gameManager.currentTime + 1, _spawnedEnemy.GetComponent<IAbility>());
 

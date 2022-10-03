@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45618a582d0dbe145afc293350ebaebe, type: 3}
   m_Name: Level5_midgane
   m_EditorClassIdentifier: 
-  levelName: Midgame fight
+  levelName: The Forest
   level: 5
   spawnRoster:
   - {fileID: 11400000, guid: 3487e05760d503b42bd38d58359fcc3c, type: 2}
+  - {fileID: 11400000, guid: 58a20a992f5dd5f48b3500dba2b102dc, type: 2}
   boss: {fileID: 0}
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 21300000, guid: 4d5dac8d1b92c474b9de3701a0a726cf, type: 3}
   nextLevel: {fileID: 11400000, guid: 34f0fd66db741d648b21913b25083a39, type: 2}

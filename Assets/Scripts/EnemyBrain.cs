@@ -12,16 +12,18 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
 
     public class AttackEvent : UnityEvent<string> { }
     public AttackEvent OnEnemyAttacks;
+    public AttackEvent OnEnemyDamaged;
+    public AttackEvent OnEnemyKilled;
+
+    public class DeathEvent: UnityEvent<EnemyBrain> { }
+    public DeathEvent OnEnemyDeath;
 
     // Start is called before the first frame update
     void Awake() {
         if (OnEnemyAttacks == null) { OnEnemyAttacks = new AttackEvent(); }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (OnEnemyDamaged == null) { OnEnemyDamaged = new AttackEvent(); } 
+        if (OnEnemyKilled == null) { OnEnemyKilled = new AttackEvent(); }
+        if (OnEnemyDeath == null) { OnEnemyDeath = new DeathEvent(); }
     }
 
     public void LoadTemplate(EnemySO template) {
@@ -70,10 +72,18 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
     public int DoDamage(int amount = -1) {
         if (amount == -1) {
              _hitpoints = 0;
+            OnEnemyKilled?.Invoke($"The {_template.enemyName} has been killed!");
+            OnEnemyDeath?.Invoke(this);
         } else {
             _hitpoints = Mathf.Max(0, _hitpoints - Mathf.Abs(amount));
+            if (_hitpoints > 0) {
+                OnEnemyDamaged?.Invoke($"The {_template.enemyName} has been hurt!");
+            } else {
+                OnEnemyKilled?.Invoke($"The {_template.enemyName} has been killed!");
+                OnEnemyDeath?.Invoke(this);
+            }
         }
-        Debug.Log($"{_template.enemyName} takes {amount} damage and is on {_hitpoints} hp");
+        
         return _hitpoints;
     }
 
@@ -87,7 +97,7 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
     }
 
     public bool IsDead() {
-        throw new System.NotImplementedException();
+        return _hitpoints <= 0;
     }
 
     public IHealth.IHealthEvent GetHealthEvent() {

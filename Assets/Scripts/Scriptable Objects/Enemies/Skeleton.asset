@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Skeleton
   m_EditorClassIdentifier: 
   enemyName: Skellie
-  max_hitpoints: 5
+  max_hitpoints: 1
   primaryAbility: {fileID: 11400000, guid: ad81cac838b66f04487d2fcc1aecc0ba, type: 2}
   sprite: {fileID: -2137709750, guid: 76e4f1dfb86ae324d804b22fc480c6e0, type: 3}

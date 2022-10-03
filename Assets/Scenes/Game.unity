@@ -290,6 +290,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b4ad9fad81ee0cd48992ce1974be10eb, type: 2}
   _gameManager: {fileID: 1528129820}
   _icon: {fileID: 21300000, guid: 3108d0a3ce7000746aac5bd26c2903bb, type: 3}
+  playedCard: 0
 --- !u!212 &144212896
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -416,21 +417,13 @@ MonoBehaviour:
     m_ActionId: dc179a9c-d399-4efb-8905-dcc07f28965d
     m_ActionName: Debugging/Crystal Spawn[/Keyboard/s]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1528129820}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: HandleMouseClick
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 3689a02f-5744-47b4-9bc5-74f5c514105d
     m_ActionName: Debugging/Select[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7f4934ae-0f70-46d3-a105-5583ef814779
+    m_ActionName: Debugging/Any Key[/Keyboard/anyKey,/Mouse/press]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Debugging
@@ -543,6 +536,7 @@ MonoBehaviour:
   - {fileID: 576012362}
   - {fileID: 1462642304}
   _gameManager: {fileID: 1528129820}
+  _uiManager: {fileID: 1862576500}
   _icon: {fileID: 21300000, guid: dc7d6657d6ca938469669d937bcdbb0d, type: 3}
   _prefab: {fileID: 6076170267476325521, guid: 7b589327d6c0011438e73019fe78bc24, type: 3}
 --- !u!1 &185824245

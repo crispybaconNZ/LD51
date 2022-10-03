@@ -91,11 +91,9 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
 
     public void PlayCard(int index) {
         if (_gameManager.currentState != GameState.PlayPhase) { return; }
-        Debug.Log($"Playing card at option {index + 1}");
 
         CardSO card = hand.TakeCard(index);
         if (card != null) {
-            Debug.Log($"Casting {card.cardName}");
             ResolveCard(card);
             discardDeck.AddCard(card);
             OnHandChanged?.Invoke(hand);

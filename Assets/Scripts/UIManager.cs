@@ -61,6 +61,12 @@ public class UIManager : MonoBehaviour {
         SubscribeToEvents();
     }
 
+    public void SubscribeToDynamicEnemies(EnemyBrain eb) {
+        eb.OnEnemyDamaged.AddListener(HandleEnemyAttack);
+        eb.OnEnemyKilled.AddListener(HandleEnemyAttack);
+        eb.OnEnemyAttacks.AddListener(HandleEnemyAttack);
+    }
+
     //----- InitiativeOrder/Timeline listeners -----
     public void UpdateInitiativeOrder(SortedList<int, IAbility> obj) {
         Debug.Log($"Initiative order has been updated: {obj.Count}");

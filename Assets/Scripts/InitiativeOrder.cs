@@ -63,6 +63,13 @@ public class InitiativeOrder {
         }
     }
 
+    public void Remove(IAbility obj) {
+        if (_order.ContainsValue(obj)) {
+            int key = _order.IndexOfValue(obj);
+            _order.Remove(key);
+        }
+    }
+
     /// <summary>
     /// Determines whether a GameObject exists at the specified index.
     /// </summary>

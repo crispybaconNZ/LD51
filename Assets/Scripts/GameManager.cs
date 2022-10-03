@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public enum GameState {
     InitGame,
@@ -181,7 +182,11 @@ public class GameManager : MonoBehaviour {
 
             // --- end of game ---
             case GameState.GameLoss:
+                SceneManager.LoadScene("GameLose");
+                break;
+
             case GameState.GameWin:
+                SceneManager.LoadScene("GameWin");
                 break;
 
             default:
