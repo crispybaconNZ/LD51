@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour {
     private void UpdateDiscardDeck(Deck deck) {
         // pick the correct image 
         if (deck.Count > 0) {
-            _discardDeckTopCard.sprite = deck.PeekCard(deck.Count - 1).frontImage;
+            _discardDeckTopCard.sprite = deck.PeekCard(0).frontImage;
         } else {
             _discardDeckTopCard.sprite = _emptyDiscardDeck;
         }

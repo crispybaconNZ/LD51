@@ -28,12 +28,14 @@ public class Deck {
     }
 
     public CardSO PeekCard(int index=0) {
+        if (index < 0 || index >= _cards.Count) { return null; }
         return _cards[index];
     }
 
-    public CardSO TakeCard() {
-        CardSO card = _cards[0];
-        _cards.RemoveAt(0);
+    public CardSO TakeCard(int index=0) {
+        if (index < 0 || index >= _cards.Count) { return null; }
+        CardSO card = _cards[index];
+        _cards.RemoveAt(index);
         return card;
     }
 

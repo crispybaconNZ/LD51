@@ -31,10 +31,9 @@ public class InitiativeOrder {
     /// </summary>
     /// <param name="index">The index to insert the object into.</param>
     /// <param name="obj">The GameObject to insert.</param>
-    /// <param name="floor">The minimum index for inserting an object (while not insert if index is less than floor).</param>
+    /// <param name="floor">The minimum index for inserting an object (will not insert if index is less than floor).</param>
     /// <returns>The index the object was actually inserted at, or -1 if a null object was passed to obj or index is below the floor value.</returns>
     public int InsertAt(int index, IAbility obj, int floor=0) {
-        Debug.Log($"Inserting {obj} at index {index}");
         if (obj == null || index < floor) {
             return -1;
         }
@@ -44,7 +43,6 @@ public class InitiativeOrder {
         }
 
         _order.Add(index, obj);
-        Debug.Log($"Inserted {obj} at index {index}");
         OnInitiativeChanged?.Invoke(_order);
         return index;
     }
@@ -83,42 +81,14 @@ public class InitiativeOrder {
         MinimumIndex = _order.Keys[0];
     }
 
-    /// <summary>
-    /// Remove all GameObjects in the initiative order that appear before the specified time.
-    /// </summary>
-    /// <param name="newFloor">The new minimum time to apply to the initiative order.</param>
-    public void Purge(int newFloor) {
-        List<int> removeList = new List<int>();
-        foreach (int index in _order.Keys) {
-            if (index < newFloor) {
-                removeList.Add(index);
-            }
-        }
-
-        Debug.Log($"{removeList.Count} items in removeList");
-        if (removeList.Count > 0) {
-            foreach (int index in removeList) {
-                // not using InitiativeOrder.RemoveAt() method, as want to remove everything before invoking the event
-                _order.Remove(index);   
-            }
-            OnInitiativeChanged?.Invoke(_order);
-        }
-
-    }
-
-    public IAbility GetNext(int startIndex=0) {
-        Debug.Log($"GetNext({startIndex}): {minimumIndex}, {_order.Count}");
-        if (_order.Count == 0) { return null; }
-        
-        int index = startIndex;
-        IAbility nextAbility = null;
-        while (nextAbility == null && startIndex < _order.Keys[_order.Count - 1]) {
-            if (_order.ContainsKey(index)) {
-                return _order[index];
-            }
+    public int GetNextIndex(int startIndex = 0) {
+        // starting at the specified startIndex, find the *next* index
+        int index = startIndex + 1;
+        while (!_order.ContainsKey(index) && index < _order.Keys[_order.Keys.Count - 1]) {
             index++;
         }
-        return null;
+        // Debug.Log($"Found next at index {index}: {_order[index]}");
+        return index;
     }
 
     public void Reset() {

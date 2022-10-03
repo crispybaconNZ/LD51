@@ -71,7 +71,7 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
     //----- IAbility methods -----
     public void Trigger() {
         // crystal only has one ability, and that's to spawn new enemies
-        // but can't it spawnpoints are already full
+        // but can't if spawnpoints are already full
         int maxSpawnpoints = spawnPoints.Length;
         if (!_currentLevel.boss) { maxSpawnpoints--; }
         if (_spawnedEnemies.Count == maxSpawnpoints) { return; }
@@ -81,17 +81,17 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
 
         // figure out which spawnpoint it will occupy
         int index = _spawnedEnemies.Count;
-        // Debug.Log($"Selected index: {index}");
 
         // spawn a new enemy
         Vector3 position = spawnPoints[index].transform.position;
-        // Debug.Log($"Spawning at {position}");
+
         GameObject _spawnedEnemy = Instantiate(_prefab, position, Quaternion.identity, this.transform);
         _spawnedEnemy.GetComponent<EnemyBrain>().LoadTemplate(enemy);
         _spawnedEnemy.GetComponent<SpriteRenderer>().sprite = enemy.sprite;
         _spawnedEnemy.GetComponent<EnemyBrain>().OnEnemyAttacks.AddListener(HandleEnemyAttack);
+        _spawnedEnemy.GetComponent<EnemyBrain>().SetGameManager(_gameManager);
         _spawnedEnemies.Add(_spawnedEnemy);
-        _gameManager.order.InsertAt(_gameManager.currentTime, _spawnedEnemy.GetComponent<IAbility>());
+        _gameManager.order.InsertAt(_gameManager.currentTime + 1, _spawnedEnemy.GetComponent<IAbility>());
 
         OnEnemySummoned?.Invoke(enemy);
     }
@@ -113,8 +113,7 @@ public class CrystalManager : MonoBehaviour, IAbility, IHealth {
         return MAX_HIT_POINTS;
     }
 
-    public int DoDamage(int amount = -1) {
-        Debug.Log($"Crystal takes {amount} damage");
+    public int DoDamage(int amount = -1) {        
         if (amount == -1) {
             hitpoints = 0;
         } else {

@@ -93,10 +93,17 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         if (_gameManager.currentState != GameState.PlayPhase) { return; }
         Debug.Log($"Playing card at option {index + 1}");
 
-        CardSO card = hand.PeekCard(index);
-        Debug.Log($"Casting {card.cardName}");
-        ResolveCard(card);
-        OnHandChanged?.Invoke(hand);
+        CardSO card = hand.TakeCard(index);
+        if (card != null) {
+            Debug.Log($"Casting {card.cardName}");
+            ResolveCard(card);
+            discardDeck.AddCard(card);
+            OnHandChanged?.Invoke(hand);
+            OnDiscardDeckChanged?.Invoke(discardDeck);
+
+            _gameManager.order.InsertAt(_gameManager.currentTime + card.ability.cost, gameObject.GetComponent<IAbility>());
+            playedCard = true;
+        }
     }
 
     public void ResolveCard(CardSO card) {
@@ -154,8 +161,7 @@ public class PlayerManager : MonoBehaviour, IAbility, IHealth {
         return MAX_HITPOINTS;
     }
 
-    public int DoDamage(int amount = -1) {
-        Debug.Log($"Player received {amount} damage");
+    public int DoDamage(int amount = -1) {       
         if (amount == -1) {
             _hitpoints = 0;
         } else {

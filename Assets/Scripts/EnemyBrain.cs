@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
     [SerializeField] private Sprite _icon;
     [SerializeField] private EnemySO _template;
-    [SerializeField] private GameManager _gameManager;
+    private GameManager _gameManager;
 
     private int _hitpoints;
 
@@ -29,6 +29,10 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
         _hitpoints = _template.max_hitpoints;
     }
 
+    public void SetGameManager(GameManager gm) {
+        _gameManager = gm;
+    }
+
     //----- IAbility methods -----
     public Sprite GetIcon() {
         return _icon;
@@ -36,10 +40,9 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
 
     public void Trigger() {
         AbilitySO ab = _template.primaryAbility;
-        Debug.Log($"Enemy attacks with {ab.abilityName}");
-
         if (ab.type == AbilityType.DamageDealing) {
             // get target
+            Debug.Log(_gameManager != null);
             List<IHealth> targetList = _gameManager.GetTargetsForEnemies();
             int index = Random.Range(0, targetList.Count);
             IHealth target = targetList[index];
@@ -70,6 +73,7 @@ public class EnemyBrain : MonoBehaviour, IAbility, IHealth {
         } else {
             _hitpoints = Mathf.Max(0, _hitpoints - Mathf.Abs(amount));
         }
+        Debug.Log($"{_template.enemyName} takes {amount} damage and is on {_hitpoints} hp");
         return _hitpoints;
     }
 

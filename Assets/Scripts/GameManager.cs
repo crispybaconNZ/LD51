@@ -42,8 +42,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private bool _debugMode = false;
 
     private SpriteRenderer sr;
-    private GameObject _selectedTarget;
- 
+    // private GameObject _selectedTarget;
+    private IAbility nextActor = null;
+
     // ----- EVENTS -----
     public class InitiativeEvent : UnityEvent<SortedList<int, IAbility>> { }
     public InitiativeEvent OnInitiativeChanged;
@@ -74,20 +75,16 @@ public class GameManager : MonoBehaviour {
         order = new InitiativeOrder();
         sr = GetComponent<SpriteRenderer>();
         currentState = GameState.InitGame;
-        _selectedTarget = null;
-
+        currentTime = 0;
     }
 
     void Update() {
-        if (order.Count > 1) { AdvanceTime(); }
         if (sr.sprite == null) { sr.sprite = currentLevel.backgroundImage; }
 
         HandleState();
     }
 
     public void HandleState() {
-        //Debug.Log($"Current state is {currentState}");
-
         switch (currentState) {
             case GameState.InitGame:
                 _playerManager.InitialiseDrawDeck();
@@ -109,14 +106,23 @@ public class GameManager : MonoBehaviour {
             case GameState.CheckForEndgame:
                 // do check here for end of game
                 if (_playerManager.IsDead()) {
+                    Debug.Log("Player has died");
                     currentState = GameState.GameLoss;
+                } else if (_crystalManager.IsDead()) {
+                    Debug.Log("Crystal has been destroyed, next level");
+                    if (currentLevel.nextLevel == null) {
+                        currentState = GameState.GameWin;
+                    } else {
+                        currentLevel = currentLevel.nextLevel;
+                        currentState = GameState.InitLevel;
+                    }
                 } else {
                     currentState = GameState.SelectNextPlayer;
                 }
                 break;
 
             case GameState.SelectNextPlayer:
-                currentState = SelectNextPlayer();
+                nextActor = SelectNextActor();
                 break;
 
             // --- player's turn ---
@@ -148,6 +154,7 @@ public class GameManager : MonoBehaviour {
 
             // ---  enemy's turn ---
             case GameState.EnemyTurn:
+                Debug.Log("It's the enemy's turn");
                 currentState = GameState.SelectTarget;
                 break;
 
@@ -156,6 +163,8 @@ public class GameManager : MonoBehaviour {
                 break;
 
             case GameState.AttackTarget:
+                Debug.Log($"It's the enemy's attack, nextActor={nextActor}");
+                nextActor?.Trigger();
                 currentState = GameState.CheckForEndgame;
                 break;
 
@@ -185,14 +194,6 @@ public class GameManager : MonoBehaviour {
         // propagates initiative order changes to preserve privacy of InitiativeOrder object
         OnInitiativeChanged?.Invoke(order);
     }
-
-    public void AdvanceTime() {
-        // move time to the next GameObject in the initiative order
-        currentTime++;  // advance by one to go past the last actor
-        // order.Purge(currentTime);   // remove everything before this new time
-        currentTime = order.MinimumIndex;   // update currentTime to the first item in the initiative order
-        OnTimelineChanged?.Invoke(currentTime);     // tell anyone interested that the time has changed
-    }
     
     public List<IHealth> GetTargetsForEnemies() {
         List<IHealth> targets = new List<IHealth>();
@@ -200,50 +201,40 @@ public class GameManager : MonoBehaviour {
         // Add the player
         targets.Add(_playerManager);
 
-        // Add any player allies
+        // Add any player allies to the list of targets
+        // (TODO: let the player summon allies)
 
         // return list
         return targets;
     }
 
-    public GameState SelectNextPlayer() {
-        // advance time so the next player is available
-        AdvanceTime();
-        Debug.Log($"Current time updated to {currentTime}");
-
-        // get next player, should be at the next index
-        IAbility nextPlayer = order.GetNext(currentTime);
-        if (nextPlayer == null) { return currentState; }
+    /// <summary>
+    /// Find the next actor (player, enemy or the crystal) to make a move
+    /// </summary>
+    /// <returns>The actor whose turn it is next.</returns>
+    public IAbility SelectNextActor() {
+        // get next actor, should be at the next index
+        int nextIndex = order.GetNextIndex(currentTime);
+        IAbility nextActor = order.RemoveAt(nextIndex);
+        currentTime = nextIndex;
+        OnTimelineChanged?.Invoke(currentTime);
 
         // use the tag to determine whose turn it is next
-        if (nextPlayer.GetTag() == "Player") {
-            return GameState.PlayerTurn;
-        } else if (nextPlayer.GetTag() == "Crystal") {
-            return GameState.CrystalTurn;
-        } else if (nextPlayer.GetTag() == "Enemy") {
-            return GameState.EnemyTurn;
+        if (nextActor.GetTag() == "Player") {
+            currentState = GameState.PlayerTurn;            
+        } else if (nextActor.GetTag() == "Crystal") {
+            currentState = GameState.CrystalTurn;
+        } else if (nextActor.GetTag() == "Enemy") {
+            currentState = GameState.EnemyTurn;
         } else {
-            Debug.Log($"Unknown tag '{nextPlayer.GetTag()}'");
-            return GameState.SelectNextPlayer;
+            Debug.Log($"Unknown tag '{nextActor.GetTag()}'");
+            currentState = GameState.SelectNextPlayer;
         }
+        return nextActor;
     }
 
     public IHealth SelectTargetEnemy() {
         return _crystalManager.GetTargetForPlayer();
-    }
-
-    public void HandleMouseClick(InputAction.CallbackContext context) {
-        if (context.performed) {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-
-            if (hit.collider != null) {
-                Debug.Log($"Clicked on {hit.collider.gameObject.name}");
-                _selectedTarget = hit.collider.gameObject;
-                _playerManager.playedCard = true;
-            }
-        }
     }
 
     // ----- TEST METHODS -----
